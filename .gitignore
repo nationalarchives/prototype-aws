@@ -1,1 +1,6 @@
 *.zip
+bin/
+lib/
+lib64
+pyvenv.cfg
+pip-selfcheck.json
