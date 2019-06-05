@@ -2,6 +2,9 @@ pipeline {
     agent {
         dockerfile true
     }
+    parameters {
+         choice(name: 'VERSION', choices: ['patch', 'major', 'minor'], description: 'Semver version')
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -10,18 +13,30 @@ pipeline {
         }
         
 
-        stage('Update lambda') {
+        stage('Update lambda and version bump') {
             steps {
+                sh 'git config user.name "Sam Palmer"'
+                sh 'git config user.email "github@sampalmer.dev"'
+                sh 'git checkout master'
+                sh 'git pull'
+                
                 withCredentials([
+                    usernamePassword(credentialsId: 'TDRGithub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'),
                     usernamePassword(credentialsId: 'TDRAWS', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
                     sh('zip tdr-run-tasks.zip tdr/runtasks.py')
                     sh('aws s3 cp tdr-run-tasks.zip s3://tdr-run-tasks')
                     sh('aws lambda update-function-code --function-name tdr-run-tasks --s3-bucket tdr-run-tasks --s3-key tdr-run-tasks.zip')
                     script {
-                        version = sh(script: "grep version package.json | head -1 | awk -F\\\" '{print \$4}'", returnStdout: true)
+                        version = sh(script: "grep version tdr/runtasks | awk -F\\\" '{print \$2}'", returnStdout: true)
                         version = version.trim()
-                        slackSend color: 'good', message: "TDR front end version ${version} has been released :party-dinosaur:"
+                        sh('bumpversion --current-version ${version} ${params.VERSION} tdr/runtasks.py')
+                        sh('git add .')
+                        sh('git tag v${version}')
+                        sh('git commit -m "Version bump for version v${version}"')
+                        sh 'git push --follow-tags https://$USERNAME:$PASSWORD@github.com/nationalarchives/tdr-aws.git master'
+                        
+                        slackSend color: 'good', message: "TDR aws scripts version ${version} has been released :party-dinosaur:"
                     } 
                 }
             }
