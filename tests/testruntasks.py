@@ -12,18 +12,18 @@ class TestRunTasks(unittest.TestCase):
         os.environ["QUEUE_URL"] = "testqueue"
 
     def setup_ec2(self):
-        ec2 = boto3.resource("ec2")
+        ec2 = boto3.resource("ec2", region_name='eu-west-2')
         response = ec2.create_instances(
             ImageId='<ami-image-id>', MinCount=1, MaxCount=5)
         return response[0].id
 
     def setup_sqs(self):
-        sqs_client = boto3.client('sqs')
+        sqs_client = boto3.client('sqs', region_name='eu-west-2')
         sqs_client.create_queue(QueueName='testqueue')
         return sqs_client
 
     def setup_ecs(self):
-        ecs_client = boto3.client('ecs')
+        ecs_client = boto3.client('ecs', region_name='eu-west-2')
         response = ecs_client.create_cluster(
             clusterName='default',
         )
