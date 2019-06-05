@@ -14,7 +14,7 @@ class TestRunTasks(unittest.TestCase):
     def setup_ec2(self):
         ec2 = boto3.resource("ec2", region_name='eu-west-2')
         response = ec2.create_instances(
-            ImageId='<ami-image-id>', MinCount=1, MaxCount=5)
+            ImageId='imageid', MinCount=1, MaxCount=5)
         return response[0].id
 
     def setup_sqs(self):
