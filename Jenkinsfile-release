@@ -28,7 +28,7 @@ pipeline {
                     sh('aws s3 cp tdr-run-tasks.zip s3://tdr-run-tasks')
                     sh('aws lambda update-function-code --function-name tdr-run-tasks --s3-bucket tdr-run-tasks --s3-key tdr-run-tasks.zip')
                     script {
-                        version = sh(script: "grep version tdr/runtasks | awk -F\\\" '{print \$2}'", returnStdout: true)
+                        version = sh(script: "grep version tdr/runtasks.py | awk -F\\\" '{print \$2}'", returnStdout: true)
                         version = version.trim()
                         sh('bumpversion --current-version ${version} ${params.VERSION} tdr/runtasks.py')
                         sh('git add .')
@@ -36,6 +36,8 @@ pipeline {
                         sh('git commit -m "Version bump for version v${version}"')
                         sh 'git push --follow-tags https://$USERNAME:$PASSWORD@github.com/nationalarchives/tdr-aws.git master'
                         
+                        version = sh(script: "grep version tdr/runtasks.py | awk -F\\\" '{print \$2}'", returnStdout: true)
+                        version = version.trim()
                         slackSend color: 'good', message: "TDR aws scripts version ${version} has been released :party-dinosaur:"
                     } 
                 }
