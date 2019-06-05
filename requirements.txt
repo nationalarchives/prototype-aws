@@ -1,4 +1,3 @@
 boto3
 unittest-xml-reporting
 moto
-unittest

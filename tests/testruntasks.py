@@ -2,15 +2,14 @@ import unittest
 import tdr.runtasks
 import boto3
 from moto import mock_ecs, mock_sqs, mock_ec2
-from test.support import EnvironmentVarGuard
 import json
+import os
 
 
 class TestRunTasks(unittest.TestCase):
 
     def setUp(self):
-        self.env = EnvironmentVarGuard()
-        self.env.set("QUEUE_URL", "testqueue")
+        os.environ["QUEUE_URL"] = "testqueue"
 
     def setup_ec2(self):
         ec2 = boto3.resource("ec2")
@@ -36,8 +35,7 @@ class TestRunTasks(unittest.TestCase):
             task = json.loads(definition.read())
             response = ecs_client.register_task_definition(
                 **task['taskDefinition'])
-            self.env.set(
-                "TASK_ARN", response['taskDefinition']['taskDefinitionArn'])
+            os.environ["TASK_ARN"] = response['taskDefinition']['taskDefinitionArn']
         return ecs_client
 
     @mock_sqs
