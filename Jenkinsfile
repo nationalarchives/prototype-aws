@@ -20,7 +20,7 @@ pipeline {
 
         stage('Run checks') {
             steps {
-                sh('python -m xmlrunner discover tests --output-file junit.xml')
+                sh('python -B -m xmlrunner discover tests --output-file junit.xml')
             }
         }
     }
