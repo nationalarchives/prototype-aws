@@ -2,7 +2,7 @@ import json
 import boto3
 import os
 
-version = "0.0.1"
+version = "0.0.2"
 
 
 def lambda_handler(event, context):
