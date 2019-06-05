@@ -23,6 +23,9 @@ class TestRunTasks(unittest.TestCase):
         return sqs_client
 
     def setup_ecs(self):
+        os.environ['SUBNET_ID'] = 'subnet'
+        os.environ['SECURITY_GROUP_ID'] = 'sgid'
+
         ecs_client = boto3.client('ecs', region_name='eu-west-2')
         response = ecs_client.create_cluster(
             clusterName='default',
