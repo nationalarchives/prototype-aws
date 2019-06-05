@@ -18,4 +18,4 @@ At the moment, this contains the lambda which receives the message from the s3 p
 
 - Run tests
 
-`python -m xmlrunner discover tests --output-file junit.xml`
+`python -B -m xmlrunner discover tests --output-file junit.xml`
