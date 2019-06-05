@@ -4,3 +4,5 @@ lib/
 lib64
 pyvenv.cfg
 pip-selfcheck.json
+__pycache__
+junit.xml

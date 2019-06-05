@@ -1,0 +1,44 @@
+{
+  "taskDefinition": {
+    "containerDefinitions": [
+      {
+        "name": "FileValidation",
+        "image": "247222723249.dkr.ecr.eu-west-2.amazonaws.com/tdr",
+        "cpu": 0,
+        "portMappings": [],
+        "essential": true,
+        "environment": [],
+        "mountPoints": [],
+        "volumesFrom": [],
+        "memoryReservation": 11,
+        "dependsOn": [
+          {
+            "containerName": "ClamAV",
+            "condition": "HEALTHY"
+          },
+          {
+            "containerName": "Siegfried",
+            "condition": "HEALTHY"
+          }
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/FileValidation",
+            "awslogs-region": "eu-west-2",
+            "awslogs-stream-prefix": "ecs"
+          }
+        }
+      }
+    ],
+    "family": "FileValidation",
+    "taskRoleArn": "arn:aws:iam::247222723249:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::247222723249:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "1024",
+    "memory": "2048"
+  }
+}
