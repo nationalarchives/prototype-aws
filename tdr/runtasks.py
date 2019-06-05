@@ -2,6 +2,8 @@ import json
 import boto3
 import os
 
+version = "0.0.1"
+
 
 def lambda_handler(event, context):
     sqs_client = boto3.client('sqs', region_name='eu-west-2')

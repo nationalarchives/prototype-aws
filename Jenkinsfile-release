@@ -1,0 +1,30 @@
+pipeline {
+    agent {
+        dockerfile true
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout(scm)
+            }
+        }
+        
+
+        stage('Update lambda') {
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'TDRAWS', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')
+                    ]) {
+                    sh('zip tdr-run-tasks.zip tdr/runtasks.py')
+                    sh('aws s3 cp tdr-run-tasks.zip s3://tdr-run-tasks')
+                    sh('aws lambda update-function-code --function-name tdr-run-tasks --s3-bucket tdr-run-tasks --s3-key tdr-run-tasks.zip')
+                    script {
+                        version = sh(script: "grep version package.json | head -1 | awk -F\\\" '{print \$4}'", returnStdout: true)
+                        version = version.trim()
+                        slackSend color: 'good', message: "TDR front end version ${version} has been released :party-dinosaur:"
+                    } 
+                }
+            }
+        }
+    }
+}
